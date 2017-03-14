@@ -4,8 +4,10 @@ OBJ = main
 OUT = ctrlcam
 EXT = .c
 
-OBJ2 = replace
-OUT2 = replace
+OBJ2 = 
+#replace
+OUT2 = 
+#replace
 EXT2 = .c
 
 DEPS = './deps/flag/flag.c' './deps/b64/encode.c' './deps/jsmn/jsmn.c' -I './deps/jsmn'
@@ -39,7 +41,7 @@ all: objects
 # routine to run
 objects: 
 	$(CC) $(OBJ)$(EXT) $(DEPS) $(COMPILER_FLAGS) -o $(OUT) $(LINKER_FLAGS)
-	$(CC2) $(OBJ2)$(EXT2) $(DEPS2) $(COMPILER_FLAGS2) $(LINKER_FLAGS2) -o $(OUT2)
+#	$(CC2) $(OBJ2)$(EXT2) $(DEPS2) $(COMPILER_FLAGS2) $(LINKER_FLAGS2) -o $(OUT2)
 
 # example code to clean stuff
 clean:
