@@ -15,11 +15,9 @@ typedef struct request {
   ffstr args;          // Vetor de argumentos, passado
 } request;
 
-
 // vector<request>
 MAKEFAT(request);
 FCMP(request, a, b) { return CMP(fstr)(a.name, b.name); }
-
 
 /// Cada tipo de câmera terá suas configurações nesta struct, que contém nome,
 /// headers gerais para todos os requests, e todos os requests possíveis, como
@@ -29,7 +27,6 @@ typedef struct cam_struct {
   ffstr headers;
   frequest requests;
 } cam_cfg;
-
 
 /// keyval é uma soma de duas strings, pode ser utilizada para construir-se uma
 /// tabela hash,

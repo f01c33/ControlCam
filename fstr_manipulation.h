@@ -44,44 +44,38 @@ size_t revstrstr(const char *haystack, const char *needle,
 /// utilizar a instrução
 /// ASM adequada, tornando o programa um pouco mais rápido.
 /// O(2N) (talvez, ainda não tive isso em aula)
-fstr fstr_replace(fstr base, const char *needle, const char *substitute) {
-  int cont_needle = 0;
-  for (char *tmp = strstr(base, needle);
-       tmp != NULL; /// counts the number of occurences of needle
-       tmp = strstr(tmp + 1, needle)) {
-    // printf("%s\n",tmp);fflush(stdout);
-    cont_needle += 1;
-  }
-  if (cont_needle == 0) {
-    return base;
-  }
-  int needle_len = strlen(needle);
-  int substitute_len = strlen(substitute);
-  // ensure we have space
-  base = fat_growzero(str, base, (substitute_len - needle_len) * cont_needle);
-  // copy things
-  int k = (substitute_len - needle_len) * cont_needle;
-  int next = revstrstr(base, needle, fat_len(str, base));
-  // printf("needle: %i,subst: %i\n",needle_len,substitute_len);
-  // printf("k:%d, next: %d\n",k,next);
-  for (int i = fat_len(str, base) + k; i >= 0; i--) {
-    // printf("%d; base[i] = %c, base[i-k] =
-    // %c\n",i,base[i],base[i-k]);fflush(stdout);
-    base[i] = base[i - k];
-    if (i - k == next) {
-      //   printf("WOO!");fflush(stdout);
-      i -= substitute_len - 1;
-      k -= (substitute_len - needle_len);
-      if (i < 0) {
-        i = 0;
-      }
-      memcpy(&base[i], substitute, substitute_len);
-      next = revstrstr(NULL, needle, 0);
-      // printf("k:%d, next: %d, i%d\n",k,next,i);fflush(stdout);
+fstr fstr_replace(fstr base, const char* needle, const char* replacement){
+    char* match = strstr(base,needle);
+    if(NULL == match){
+        return base;
     }
-  }
-  return base;
+    int needle_len = strlen(needle);
+    int replacement_len = strlen(replacement);
+    fstr tmp;
+    if(needle_len < replacement_len){
+        tmp = fat_new(str,fat_len(str,base)*2);
+        // tmp = calloc(1,sizeof(char)*strlen(base)*2);
+        // se for usar sem a fstr
+    }else{
+        tmp = fat_new(str,fat_len(str,base));
+        // tmp = fat_newfrom(str,base,fat_len(str,base));
+    }
+    int b_i = 0, t_i = 0;
+    while(match != NULL){
+        memcpy(tmp+t_i,base+b_i,match-base-b_i);
+        t_i+=match-base-b_i;
+        b_i+=match-base-b_i;
+        memcpy(tmp+t_i,replacement,replacement_len);
+        t_i+=replacement_len;
+        b_i+=needle_len;
+        match = strstr(match+1,needle);
+    }
+    memcpy(tmp+t_i,base+b_i,strlen(base+b_i));
+    fat_setlen(str,tmp,b_i+strlen(base+b_i));
+    fat_free(str,base);
+    return tmp;
 }
+
 
 /// char**, com um pouco de açucar (vide fat_array.h), ou vector<string> com
 /// macros
@@ -120,23 +114,23 @@ ffstr fstr_explode(char *input, const char divider[]) {
   return out;
 }
 
-fstr ffstr_join(char** input,int len,char sep){
+fstr ffstr_join(char **input, int len, char sep) {
   int total_size = 0;
-  for(int i = 0; i < len; i++){
+  for (int i = 0; i < len; i++) {
     total_size += strlen(input[i]);
   }
-  fstr out = fat_new(str,total_size+len+1); // separator is not put on the end
-  for(int i = 0; i < len; i++){
-    for(int j = 0; input[i][j] != 0;j++){
-      out = fat_push(str,out,input[i][j]);
+  fstr out =
+      fat_new(str, total_size + len + 1); // separator is not put on the end
+  for (int i = 0; i < len; i++) {
+    for (int j = 0; input[i][j] != 0; j++) {
+      out = fat_push(str, out, input[i][j]);
     }
-    out = fat_push(str,out,sep);
+    out = fat_push(str, out, sep);
   }
-  out[fat_len(str,out)-1]='\0';
+  out[fat_len(str, out) - 1] = '\0';
   // out = fat_push(str,out,'\0');
   return out;
 }
-
 
 /// lê o arquivo filename em uma fstr, caso stg seja NULL, retornará uma nova
 /// fstr (que deve

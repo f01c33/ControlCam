@@ -11,7 +11,6 @@ int nanosleep(const struct timespec *req, struct timespec *rem);
 #endif
 // */
 
-
 // modified from libcurl example
 // reaaaally got to refactor this function, it should recieve a complete (worked
 // up) url, and a header f_array
@@ -67,7 +66,6 @@ int curl_rqst(const char *auth, const char *url, const char *base,
   fclose(log);
   return 0;
 }
-
 // divides sleep automatically, whole part goes to seconds, fractional part goes
 // to nanoseconds, as tv_nsec can only hold a value so big
 void n_sleep(double sec) {

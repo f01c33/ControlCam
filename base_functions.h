@@ -15,7 +15,6 @@ void request_free(request rqst) {
   //  printf("len: %zu",fat_len(str,rqst.args));fflush(stdout);
 }
 
-
 void cam_cfg_free(cam_cfg *cfg) {
   if (cfg == NULL) {
     return;
@@ -34,7 +33,6 @@ void cam_cfg_free(cam_cfg *cfg) {
   }
   free(cfg);
 }
-
 
 /// A grande função que lê a configuração da câmera de nome config,
 fkeyval read_camera_args(const char *config) {
@@ -80,7 +78,6 @@ fkeyval read_camera_args(const char *config) {
   fat_free(str, cam_cfg_txt);
   return out;
 }
-
 
 /// lê o tipo da câmera da pasta /config/cam_type.json
 cam_cfg *read_cam_config(const char *cam_type) {
@@ -401,7 +398,6 @@ cleanup_error0:
   return NULL;
 }
 
-
 void print_cam_cfg(cam_cfg *cfg) {
   printf("name: %s\n", cfg->name);
   for (int i = 0; i < (int)fat_len(fstr, cfg->headers); i++) {
@@ -434,7 +430,6 @@ void print_cam_cfg(cam_cfg *cfg) {
     printf("}\n");
   }
 }
-
 
 /// procura e subistutui todos os macros na string stg que estão no fkeyval
 /// table
