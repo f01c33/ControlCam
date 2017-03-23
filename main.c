@@ -17,16 +17,17 @@
 
 #define VERSION "0.0.2"
 
-#include "external.h"
 #include "fstr_manipulation.h"
 #include "json_functions.h"
 #include "base_types.h"
 #include "base_functions.h"
+#include "external.h"
 
 struct command {
   fstr name;
+  fstr function;
   int arg;
-  float factor;
+  double factor;
 };
 // process the argument, subtitute macros, execute commands
 // maybe use a recursive function to do it:
@@ -40,6 +41,25 @@ struct command {
 // return
 //}
 //
+void debug(fstr base, ffstr base_headers, ffstr headers){
+  printf("base:\"%s\"\n",base);
+  if(base_headers){ //!= NULL
+    printf("b_headers:[");
+    for(int i = 0; i < fat_len(fstr,base_headers); i++){
+      printf("\"%s\",",base_headers[i]);
+    }
+    printf("]\n");
+  }
+  if(headers){//!= NULL
+    printf("headers:[");
+    for(int i = 0; i < fat_len(fstr,headers); i++){
+      printf("\"%s\",",headers[i]);
+    }
+    printf("]\n");
+  }
+  return;
+}
+
 void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   if (cmd.name == NULL) {
     return;
@@ -50,9 +70,9 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
 
   run_cmd_tree(cfg, table, (struct command){.name = command.prev_cmd,
                                             .arg = -2,
-                                            .factor = 0.0}); // to the left
+                                            .factor = 0.0,
+                                            .function = cmd.function}); // to the left
 
-  // ffstr headers = cfg->headers;
   ffstr headers = fat_new(fstr, fat_len(fstr, cfg->headers));
   for (int i = 0; headers != NULL && i < fat_len(fstr, headers); i++) {
     headers[i] = substitute_macros(fat_dup(str, cfg->headers[i]), table);
@@ -64,17 +84,17 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
     command.headers[i] =
         substitute_macros(fat_dup(str, command.headers[i]), table);
   }
-  printf("args[0]=%s\n", command.args[0]);
+  // printf("args[0]=%s\n", command.args[0]);
   if (cmd.arg > fat_len(str, command.args) ||
       cmd.arg < -1) { // the standard argument is the first one
     command.base = fstr_replace(command.base, "{{ARG}}", command.args[0]);
   } else {
     command.base = fstr_replace(command.base, "{{ARG}}", command.args[cmd.arg]);
   }
+ /*
   printf("base:%s\n", command.base);
-  fflush(stdout);
-  // /*
   printf("base_hdrs: \n");
+  fflush(stdout);
   for (int i = 0; headers != NULL && i < fat_len(fstr, headers); i++) {
     printf("bhdr[%i]:%s\n", i, headers[i]);
   }
@@ -82,12 +102,24 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   for (int i = 0; command.headers != NULL && i < fat_len(fstr, command.headers);
        i++) {
     printf("hdr[%i]:%s", i, command.headers[i]);
-    // call correct function here
   }
   // */
+
+//  decide que função chamar, comparando seu nome
+  if(cmd.function != NULL){ //não da pra fazer switch em strcmp, talvez o hash
+    printf("Running function: %s\n",cmd.function);
+    if(0 == strcmp("debug",cmd.function)){
+      debug(command.base,headers,command.headers);
+    } else if(0 == strcmp("curl",cmd.function)){
+      curl_rqst(command.base,headers,command.headers);
+    }
+  }
+  // printf("sleep! %lf %lf\n",cmd.factor,command.fact_to_next);
+  // n_sleep(cmd.factor*command.fact_to_next);
   run_cmd_tree(cfg, table, (struct command){.name = command.next_cmd,
                                             .arg = -2,
-                                            .factor = 0.0}); // to the right
+                                            .factor = 0.0,
+                                            .function = cmd.function}); // to the right
 
   fat_free(str, command.base);
   for (int i = 0; command.headers && i < fat_len(str, command.headers); i++) {
@@ -149,7 +181,7 @@ int main(int argc, char *argv[]) {
   // for(int i = 1; i < fat_len(str,arguments);i++){
 
   run_cmd_tree(cfg, cam,
-               (struct command){.name = "up", .arg = -2, .factor = 0.0});
+               (struct command){.name = "up", .arg = -2, .factor = 1.0,.function = "debug"});
   // }
   // print_cam_cfg(cfg);
 

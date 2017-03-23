@@ -13,7 +13,7 @@
 		{"name":"up", 
 			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}", 
 			"args":["2"],
-			"factor_to_next":0.0, 
+			"factor_to_next":1.0, 
 			"next_cmd":"reset"
 		},
 		{"name":"down", 

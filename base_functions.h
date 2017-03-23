@@ -219,11 +219,11 @@ cam_cfg *read_cam_config(const char *cam_type) {
             }
             rqst.base = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
             // printf("cmd_base = %s\n",rqst.base);
-          } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "fact_to_next")) {
-            // printf("cmd_fact_to_next: type: %i, start: %i, end: %i, size:
-            // %i\n",
-            //        jstokens[i].type, jstokens[i].start, jstokens[i].end,
-            //        jstokens[i].size);
+          } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "factor_to_next")) {
+            printf("cmd_fact_to_next: type: %i, start: %i, end: %i, size:\
+            %i\n",
+                   jstokens[i].type, jstokens[i].start, jstokens[i].end,
+                   jstokens[i].size);
             // test if null
             i++;
             if (jstokens[i].type == JSMN_PRIMITIVE) {
@@ -232,6 +232,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
               } else { // should also test if it's not a number
                 tmpstr = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
                 rqst.fact_to_next = strtod(tmpstr, NULL);
+                printf("TO_NEXT,%lf",rqst.fact_to_next);
                 fat_free(str, tmpstr);
               }
             }

@@ -44,38 +44,37 @@ size_t revstrstr(const char *haystack, const char *needle,
 /// utilizar a instrução
 /// ASM adequada, tornando o programa um pouco mais rápido.
 /// O(2N) (talvez, ainda não tive isso em aula)
-fstr fstr_replace(fstr base, const char* needle, const char* replacement){
-    char* match = strstr(base,needle);
-    if(NULL == match){
-        return base;
-    }
-    int needle_len = strlen(needle);
-    int replacement_len = strlen(replacement);
-    fstr tmp;
-    if(needle_len < replacement_len){
-        tmp = fat_new(str,fat_len(str,base)*2);
-        // tmp = calloc(1,sizeof(char)*strlen(base)*2);
-        // se for usar sem a fstr
-    }else{
-        tmp = fat_new(str,fat_len(str,base));
-        // tmp = fat_newfrom(str,base,fat_len(str,base));
-    }
-    int b_i = 0, t_i = 0;
-    while(match != NULL){
-        memcpy(tmp+t_i,base+b_i,match-base-b_i);
-        t_i+=match-base-b_i;
-        b_i+=match-base-b_i;
-        memcpy(tmp+t_i,replacement,replacement_len);
-        t_i+=replacement_len;
-        b_i+=needle_len;
-        match = strstr(match+1,needle);
-    }
-    memcpy(tmp+t_i,base+b_i,strlen(base+b_i));
-    fat_setlen(str,tmp,b_i+strlen(base+b_i));
-    fat_free(str,base);
-    return tmp;
+fstr fstr_replace(fstr base, const char *needle, const char *replacement) {
+  char *match = strstr(base, needle);
+  if (NULL == match) {
+    return base;
+  }
+  int needle_len = strlen(needle);
+  int replacement_len = strlen(replacement);
+  fstr tmp;
+  if (needle_len < replacement_len) {
+    tmp = fat_new(str, fat_len(str, base) * 2);
+    // tmp = calloc(1,sizeof(char)*strlen(base)*2);
+    // se for usar sem a fstr
+  } else {
+    tmp = fat_new(str, fat_len(str, base));
+    // tmp = fat_newfrom(str,base,fat_len(str,base));
+  }
+  int b_i = 0, t_i = 0;
+  while (match != NULL) {
+    memcpy(tmp + t_i, base + b_i, match - base - b_i);
+    t_i += match - base - b_i;
+    b_i += match - base - b_i;
+    memcpy(tmp + t_i, replacement, replacement_len);
+    t_i += replacement_len;
+    b_i += needle_len;
+    match = strstr(match + 1, needle);
+  }
+  memcpy(tmp + t_i, base + b_i, strlen(base + b_i));
+  fat_setlen(str, tmp, b_i + strlen(base + b_i));
+  fat_free(str, base);
+  return tmp;
 }
-
 
 /// char**, com um pouco de açucar (vide fat_array.h), ou vector<string> com
 /// macros
@@ -93,7 +92,7 @@ FCMP(fstr, a, b) { return strcmp(a, b); }
 // struct explode_out explode(char* input, const char* divider){
 /// Divide a fstr input todas as ocorrencias dos chars divider e retorna um
 /// vetor de strings, ou ffstr.
-ffstr fstr_explode(char *input, const char divider[]) {
+ffstr fstr_explode(char input[], char divider[]) {
   // char *input = &input[0];
   char *divtmp = &input[0];
   // size_t lendiv = strlen(divider);
