@@ -79,6 +79,13 @@ fkeyval read_camera_args(const char *config) {
   return out;
 }
 
+void print20(char* stg){
+  for(int i = 0; i < 20; i++,stg++){
+    putchar(stg[0]);
+  }
+  return;
+}
+
 /// lê o tipo da câmera da pasta /config/cam_type.json
 cam_cfg *read_cam_config(const char *cam_type) {
   char tmp[1 << 7];
@@ -168,6 +175,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
         goto cleanup_error1;
       }
       out->requests = fat_new(request, size);
+      i++;
       for (int j = 0; j < size; j++) {
         // printf("NEW_RQST\n");
         rqst.name = NULL;
@@ -179,12 +187,12 @@ cam_cfg *read_cam_config(const char *cam_type) {
         // printf("rqst_array: type: %i, start: %i, end: %i, size: %i\n",
         //        jstokens[i].type, jstokens[i].start, jstokens[i].end,
         //        jstokens[i].size);
-        i++;
         if (jstokens[i].type != JSMN_OBJECT) {
           fprintf(stderr,
                   "commands should have an array of objects (requests), it "
                   "does not, currently, it has type %d; file %s at line %i\n",
                   jstokens[i].type, cam_type, __LINE__);
+          print20(&cam_cfg_txt[jstokens[i].start]);
           goto cleanup_error2;
         }
         int rqst_size = jstokens[i].size;
@@ -192,8 +200,11 @@ cam_cfg *read_cam_config(const char *cam_type) {
         // jstok_print(cam_cfg_txt, jstokens[i]);
         // puts("");
         // printf("rqst_size = %d\n",rqst_size);
+        i++;
         for (int k = 0; k < rqst_size; k++) { // parsing each request
-          i++;
+          // printf("rqst:");
+          // print20(&cam_cfg_txt[jstokens[i].start]);
+          // puts("");
           if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "name")) {
             // printf("cmd_name: type: %i, start: %i, end: %i, size: %i\n",
             //        jstokens[i].type, jstokens[i].start, jstokens[i].end,
@@ -205,6 +216,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
               goto cleanup_error2;
             }
             rqst.name = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
+            i++;
             // tmpstr = NULL;
             // printf("cmd_name = %s\n",rqst.name);
           } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "base")) {
@@ -218,22 +230,24 @@ cam_cfg *read_cam_config(const char *cam_type) {
               goto cleanup_error2;
             }
             rqst.base = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
+            i++;
             // printf("cmd_base = %s\n",rqst.base);
           } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "factor_to_next")) {
-            printf("cmd_fact_to_next: type: %i, start: %i, end: %i, size:\
-            %i\n",
-                   jstokens[i].type, jstokens[i].start, jstokens[i].end,
-                   jstokens[i].size);
-            // test if null
             i++;
+            // printf("cmd_fact_to_next: type: %i, start: %i, end: %i, size:\
+            // %i\n",
+            //        jstokens[i].type, jstokens[i].start, jstokens[i].end,
+            //        jstokens[i].size);
+            // test if null
             if (jstokens[i].type == JSMN_PRIMITIVE) {
               if (cam_cfg_txt[jstokens[i].start] == 'n') {
                 rqst.fact_to_next = 0.0;
               } else { // should also test if it's not a number
                 tmpstr = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
                 rqst.fact_to_next = strtod(tmpstr, NULL);
-                printf("TO_NEXT,%lf",rqst.fact_to_next);
+                // printf("TO_NEXT,%lf\n",rqst.fact_to_next);
                 fat_free(str, tmpstr);
+                i++;
               }
             }
           } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "next_cmd")) {
@@ -259,6 +273,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
                         cam_type, __LINE__);
               }
             }
+            i++;
           } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "prev_cmd")) {
             // printf("cmd_next_cmd: type: %i, start: %i, end: %i, size: %i\n",
             //        jstokens[i].type, jstokens[i].start, jstokens[i].end,
@@ -275,6 +290,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
               }
             } else if (jstokens[i].type == JSMN_STRING) {
               rqst.prev_cmd = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
+              i++;
               if (rqst.prev_cmd == NULL) {
                 fprintf(stderr,
                         "prev_cmd should be either null, or the name of the "
@@ -282,7 +298,6 @@ cam_cfg *read_cam_config(const char *cam_type) {
                         cam_type, __LINE__);
               }
             }
-
           } else if (0 == jsoneq(cam_cfg_txt, &jstokens[i], "headers")) {
             // printf("cmd_hdr: type: %i, start: %i, end: %i, size: %i\n",
             //        jstokens[i].type, jstokens[i].start, jstokens[i].end,
@@ -305,6 +320,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
               for (int l = 0; l < hdr_size; l++) { // parse header array
                 i++;
                 tmpstr = fstr_from_jstok(cam_cfg_txt, jstokens[i]);
+                i++;
                 if (tmpstr == NULL) {
                   fprintf(
                       stderr,
@@ -354,7 +370,10 @@ cam_cfg *read_cam_config(const char *cam_type) {
               }
               tmpstr = NULL;
               i++;
-            } else {
+              // printf("arg_after:");
+              // print20(&cam_cfg_txt[jstokens[i].start]);
+              // puts("");            
+          } else {
               fprintf(stderr,
                       "args should be either null, or an array containing the "
                       "args as strings, in file %s, at line %i\n",
@@ -362,10 +381,10 @@ cam_cfg *read_cam_config(const char *cam_type) {
             }
           } // new commands could go here, prehaps another field, maybe
             // adressable as a "macro"
-          // else{
-          //   printf("\nwat\n");
-          //   jstok_print(cam_cfg_txt,jstokens[i]);
-          // }
+          else{
+            printf("\nwat\n");
+            jstok_print(cam_cfg_txt,jstokens[i]);
+          }
         }
         // printf("\nname: %s, base: %s, factor_to_next: %ld, next_cmd =
         // %d\nargs: ",rqst.name,rqst.base,rqst.fact_to_next,rqst.next_cmd);

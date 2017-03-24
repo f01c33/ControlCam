@@ -10,9 +10,9 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 
 /// copia um jsmntok para uma fstr separada.
 static fstr fstr_from_jstok(fstr base, jsmntok_t tok) {
-  if (tok.type != JSMN_STRING) {
-    return NULL;
-  }
+//  if (tok.type != JSMN_STRING) {
+//    return NULL;
+//  }
   fstr out = fat_new(str, tok.end - tok.start + 1);
   for (int i = 0; i <= tok.end - tok.start; i++) {
     out = fat_push(str, out, base[tok.start + i]);

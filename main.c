@@ -15,7 +15,14 @@
 
 #include <curl/curl.h> // para comunicação web no geral
 
-#define VERSION "0.0.2"
+#define VERSION "0.0.2" // git
+
+// ordem correta
+// #include "fstr_manipulation.h"
+// #include "json_functions.h"
+// #include "base_types.h"
+// #include "base_functions.h"
+// #include "external.h"
 
 #include "fstr_manipulation.h"
 #include "json_functions.h"
@@ -41,19 +48,19 @@ struct command {
 // return
 //}
 //
-void debug(fstr base, ffstr base_headers, ffstr headers){
-  printf("base:\"%s\"\n",base);
-  if(base_headers){ //!= NULL
+void debug(fstr base, ffstr base_headers, ffstr headers) {
+  printf("base:\"%s\"\n", base);
+  if (base_headers) { //!= NULL
     printf("b_headers:[");
-    for(int i = 0; i < fat_len(fstr,base_headers); i++){
-      printf("\"%s\",",base_headers[i]);
+    for (int i = 0; i < fat_len(fstr, base_headers); i++) {
+      printf("\"%s\",", base_headers[i]);
     }
     printf("]\n");
   }
-  if(headers){//!= NULL
+  if (headers) { //!= NULL
     printf("headers:[");
-    for(int i = 0; i < fat_len(fstr,headers); i++){
-      printf("\"%s\",",headers[i]);
+    for (int i = 0; i < fat_len(fstr, headers); i++) {
+      printf("\"%s\",", headers[i]);
     }
     printf("]\n");
   }
@@ -68,10 +75,11 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   request command =
       cfg->requests[fat_bsearch(request, cfg->requests, CMP(request), tmp)];
 
-  run_cmd_tree(cfg, table, (struct command){.name = command.prev_cmd,
-                                            .arg = -2,
-                                            .factor = 0.0,
-                                            .function = cmd.function}); // to the left
+  run_cmd_tree(cfg, table,
+               (struct command){.name = command.prev_cmd,
+                                .arg = -2,
+                                .factor = 0.0,
+                                .function = cmd.function}); // to the left
 
   ffstr headers = fat_new(fstr, fat_len(fstr, cfg->headers));
   for (int i = 0; headers != NULL && i < fat_len(fstr, headers); i++) {
@@ -91,35 +99,38 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   } else {
     command.base = fstr_replace(command.base, "{{ARG}}", command.args[cmd.arg]);
   }
- /*
-  printf("base:%s\n", command.base);
-  printf("base_hdrs: \n");
-  fflush(stdout);
-  for (int i = 0; headers != NULL && i < fat_len(fstr, headers); i++) {
-    printf("bhdr[%i]:%s\n", i, headers[i]);
-  }
-  printf("name: %s, base: %s, headers:\n", command.name, command.base);
-  for (int i = 0; command.headers != NULL && i < fat_len(fstr, command.headers);
-       i++) {
-    printf("hdr[%i]:%s", i, command.headers[i]);
-  }
-  // */
+  /*
+   printf("base:%s\n", command.base);
+   printf("base_hdrs: \n");
+   fflush(stdout);
+   for (int i = 0; headers != NULL && i < fat_len(fstr, headers); i++) {
+     printf("bhdr[%i]:%s\n", i, headers[i]);
+   }
+   printf("name: %s, base: %s, headers:\n", command.name, command.base);
+   for (int i = 0; command.headers != NULL && i < fat_len(fstr,
+   command.headers);
+        i++) {
+     printf("hdr[%i]:%s", i, command.headers[i]);
+   }
+   // */
 
-//  decide que função chamar, comparando seu nome
-  if(cmd.function != NULL){ //não da pra fazer switch em strcmp, talvez o hash
-    printf("Running function: %s\n",cmd.function);
-    if(0 == strcmp("debug",cmd.function)){
-      debug(command.base,headers,command.headers);
-    } else if(0 == strcmp("curl",cmd.function)){
-      curl_rqst(command.base,headers,command.headers);
+  //  decide que função chamar, comparando seu nome
+  if (cmd.function != NULL) { // não da pra fazer switch em strcmp, talvez o
+                              // hash
+    printf("Running function: %s\n", cmd.function);
+    if (0 == strcmp("debug", cmd.function)) {
+      debug(command.base, headers, command.headers);
+    } else if (0 == strcmp("curl", cmd.function)) {
+      curl_rqst(command.base, headers, command.headers);
     }
   }
   // printf("sleep! %lf %lf\n",cmd.factor,command.fact_to_next);
-  // n_sleep(cmd.factor*command.fact_to_next);
-  run_cmd_tree(cfg, table, (struct command){.name = command.next_cmd,
-                                            .arg = -2,
-                                            .factor = 0.0,
-                                            .function = cmd.function}); // to the right
+  n_sleep(cmd.factor*command.fact_to_next);
+  run_cmd_tree(cfg, table,
+               (struct command){.name = command.next_cmd,
+                                .arg = -2,
+                                .factor = 0.0,
+                                .function = cmd.function}); // to the right
 
   fat_free(str, command.base);
   for (int i = 0; command.headers && i < fat_len(str, command.headers); i++) {
@@ -180,8 +191,10 @@ int main(int argc, char *argv[]) {
   // run commands here
   // for(int i = 1; i < fat_len(str,arguments);i++){
 
-  run_cmd_tree(cfg, cam,
-               (struct command){.name = "up", .arg = -2, .factor = 1.0,.function = "debug"});
+  run_cmd_tree(cfg, cam, (struct command){.name = "up",
+                                          .arg = -2,
+                                          .factor = 1.0,
+                                          .function = "debug"});
   // }
   // print_cam_cfg(cfg);
 

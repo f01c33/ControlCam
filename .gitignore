@@ -2,3 +2,5 @@
 ctrlcam
 
 \.vscode/
+
+*.user
