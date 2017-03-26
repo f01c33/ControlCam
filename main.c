@@ -71,9 +71,15 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   if (cmd.name == NULL) {
     return;
   }
+
+
   request tmp = (request){.name = cmd.name};
-  request command =
-      cfg->requests[fat_bsearch(request, cfg->requests, CMP(request), tmp)];
+  int index_command = fat_bsearch(request, cfg->requests, CMP(request), tmp);
+  // printf("\t[%s,%i]\n",cmd.name,index_command);
+  if(index_command == -1){
+      return;
+  }
+  request command = cfg->requests[index_command];
 
   run_cmd_tree(cfg, table,
                (struct command){.name = command.prev_cmd,
@@ -117,7 +123,7 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   //  decide que função chamar, comparando seu nome
   if (cmd.function != NULL) { // não da pra fazer switch em strcmp, talvez o
                               // hash
-    printf("Running function: %s\n", cmd.function);
+    // printf("Running function: %s\n", cmd.function);
     if (0 == strcmp("debug", cmd.function)) {
       debug(command.base, headers, command.headers);
     } else if (0 == strcmp("curl", cmd.function)) {
@@ -125,7 +131,7 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
     }
   }
   // printf("sleep! %lf %lf\n",cmd.factor,command.fact_to_next);
-  n_sleep(cmd.factor*command.fact_to_next);
+  n_sleep(cmd.factor * command.fact_to_next);
   run_cmd_tree(cfg, table,
                (struct command){.name = command.next_cmd,
                                 .arg = -2,
@@ -143,21 +149,57 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   return;
 }
 
+struct command parse_user_command(char *input) {
+  struct command out = {.name=NULL,.arg=-2,.factor=0.0};
+  ffstr tmp = fstr_explode(input, ",");
+  char *breaker;
+  for (int i = 0; i < fat_len(fstr, tmp); i++) {
+    if ((breaker = strstr(tmp[i], "n:")), breaker != NULL) {
+      // breaker = strstr(tmp[i],"n:")+1;
+      out.name = breaker + 2;
+      breaker = strchr(breaker, ']');
+      if (breaker)
+        *breaker = '\0';
+    } else if ((breaker = strstr(tmp[i], "a:")), breaker != NULL) {
+      breaker = strchr(tmp[i], ']');
+      if (breaker)
+        *breaker = '\0';
+      breaker = strstr(tmp[i], "a:") + 2;
+      out.arg = atoi(breaker);
+    } else if ((breaker = strstr(tmp[i], "f:")), breaker != NULL) {
+      breaker = strchr(tmp[i], ']');
+      if (breaker)
+        *breaker = '\0';
+      breaker = strstr(tmp[i], "f:") + 2;
+      out.factor = strtod(breaker, NULL);
+    }
+  }
+  // return (struct command){};
+  return out;
+}
+
 int main(int argc, char *argv[]) {
   // ignoring program name, as it's not usefull in this case'
-  fstr argjoin = ffstr_join(argv + 1, argc - 1, ' ');
-  puts(argjoin);
+  // fstr argjoin = ffstr_join(argv + 1, argc - 1, ' ');
+  // puts(argjoin);
 
-  ffstr arguments = fstr_explode(argjoin, " -");
+  // ffstr arguments = fstr_explode(argjoin, " -cmd=");
+  
+  char argfake[60];
+  strcpy(argfake,"cam1 -cmd=[n:up,a:0,f:1] -cmd=[n:up]");
+  ffstr arguments = fstr_explode(argfake," -cmd=");
   // printf("len:%zu,alloc:%zu\n", fat_len(fstr, arguments),
   //        fat_alloc(fstr, arguments));
-  // for (int i = 0; i < fat_len(fstr, arguments); i++) {
-  //   printf("%i:%s\n", i, arguments[i]);
-  //   fflush(stdout);
-  // }
+  struct command user_commands[fat_len(fstr, arguments) - 1];
+  for (int i = 1; i < fat_len(fstr, arguments); i++) {
+    // printf("%i:%s\n", i, arguments[i]);
+    user_commands[i - 1] = parse_user_command(arguments[i]);
+    // puts("");
+  }
+  // fflush(stdout);
   // for(int i = 0; i < fat_len(str,arguments);i++){
-  // arguments[i] = fstr_replace(arguments[i]," ","");
-  // puts(arguments[i]);
+  // // arguments[i] = fstr_replace(arguments[i]," ","");
+  //   puts(arguments[i]);
   // }
   fstr camera = arguments[0];
 
@@ -171,12 +213,10 @@ int main(int argc, char *argv[]) {
   }
 
   keyval tmp = {.key = "type", .val = NULL};
-
-  // for (int i = 0; i < fat_len(keyval, cam); i++) {
-  //   printf("%s\n", cam[i].key);
-  // }
-
   int type_i = fat_bsearch(keyval, cam, CMP(keyval), tmp);
+
+  tmp = (keyval){.key="function",.val=NULL};
+  char* cam_function = cam[fat_bsearch(keyval,cam,CMP(keyval),tmp)].val;
 
   cam_cfg *cfg = read_cam_config(cam[type_i].val);
   if (cfg == NULL) {
@@ -187,17 +227,20 @@ int main(int argc, char *argv[]) {
   // print_cam_cfg(cfg);
   fat_sort(request, cfg->requests, CMP(request)); // so we can find the
   // request with a binary search
+  // printf("len:%zu",fat_len(fstr,arguments));
 
   // run commands here
-  // for(int i = 1; i < fat_len(str,arguments);i++){
+  for(int i = 0; i < fat_len(fstr,arguments)-1; i++){
+    user_commands[i].function = cam_function;
+    // printf("n:\'%s\',a:\'%i\',f:\'%lf\',func:\'%s\'\n", user_commands[i].name,user_commands[i].arg, user_commands[i].factor,user_commands[i].function);
 
-  run_cmd_tree(cfg, cam, (struct command){.name = "up",
-                                          .arg = -2,
-                                          .factor = 1.0,
-                                          .function = "debug"});
-  // }
+    run_cmd_tree(cfg,cam,user_commands[i]);
+  // run_cmd_tree(cfg, cam, (struct command){.name = "up",
+  //                                         .arg = -2,
+  //                                         .factor = 1.0,
+  //                                         .function = "debug"});
+  }
   // print_cam_cfg(cfg);
-
   if (0) {
   error_cam_cfg:
     ret = -1;

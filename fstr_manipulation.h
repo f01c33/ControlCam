@@ -84,35 +84,27 @@ FCMP(fstr, a, b) { return strcmp(a, b); }
 // input must be null terminated, otherwise undefined behaviour shall occur,
 // it's also destructive to the input string's dividers
 
-// can be used stand-alone with this struct
-// struct explode_out {
-//   size_t len;
-//   char *stg[];
-// }; // this is real nice
-// struct explode_out explode(char* input, const char* divider){
 /// Divide a fstr input todas as ocorrencias dos chars divider e retorna um
 /// vetor de strings, ou ffstr.
+
+// TODO: Arrumar os atributos de saida das fstr
 ffstr fstr_explode(char input[], char divider[]) {
   // char *input = &input[0];
-  char *divtmp = &input[0];
-  // size_t lendiv = strlen(divider);
+  char *divtmp = strstr(input, divider);
+  size_t lendiv = strlen(divider);
   // size_t cont = 1;
   ffstr out = fat_new(fstr, 8);
   fat_push(fstr, out, input);
-  while (input[0] != '\0') { // count the number of dividers inside the string
-    divtmp = divider;
-    while (divtmp[0] != '\0') {
-      if (input[0] == divtmp[0]) {
-        input[0] = '\0';
-        out = fat_push(fstr, out, input + 1);
-      }
-      divtmp++;
-    }
-    input++;
+  while (divtmp != NULL) {
+    // divtmp[0] = '\0';
+    memset(divtmp,'\0',lendiv);
+    out = fat_push(fstr, out, divtmp + lendiv);
+    divtmp = strstr(divtmp + lendiv, divider);
   }
   return out;
 }
 
+///Recebe um vetor de strings normais, seu tamanho, um separador, e retorna uma fat string
 fstr ffstr_join(char **input, int len, char sep) {
   int total_size = 0;
   for (int i = 0; i < len; i++) {
