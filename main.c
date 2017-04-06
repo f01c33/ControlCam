@@ -15,7 +15,7 @@
 
 #include <curl/curl.h> // para comunicação web no geral
 
-#define VERSION "0.0.2" // git
+#define VERSION "0.0.3" // git
 
 // ordem correta
 // #include "fstr_manipulation.h"
@@ -72,12 +72,11 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
     return;
   }
 
-
   request tmp = (request){.name = cmd.name};
   int index_command = fat_bsearch(request, cfg->requests, CMP(request), tmp);
   // printf("\t[%s,%i]\n",cmd.name,index_command);
-  if(index_command == -1){
-      return;
+  if (index_command == -1) {
+    return;
   }
   request command = cfg->requests[index_command];
 
@@ -88,6 +87,7 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
                                 .function = cmd.function}); // to the left
 
   ffstr headers = fat_new(fstr, fat_len(fstr, cfg->headers));
+  fat_setlen(fstr, headers, fat_len(fstr, cfg->headers));
   for (int i = 0; headers != NULL && i < fat_len(fstr, headers); i++) {
     headers[i] = substitute_macros(fat_dup(str, cfg->headers[i]), table);
   }
@@ -150,7 +150,7 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
 }
 
 struct command parse_user_command(char *input) {
-  struct command out = {.name=NULL,.arg=-2,.factor=0.0};
+  struct command out = {.name = NULL, .arg = -2, .factor = 0.0};
   ffstr tmp = fstr_explode(input, ",");
   char *breaker;
   for (int i = 0; i < fat_len(fstr, tmp); i++) {
@@ -184,10 +184,10 @@ int main(int argc, char *argv[]) {
   // puts(argjoin);
 
   // ffstr arguments = fstr_explode(argjoin, " -cmd=");
-  
+
   char argfake[60];
-  strcpy(argfake,"cam1 -cmd=[n:up,a:0,f:1] -cmd=[n:up]");
-  ffstr arguments = fstr_explode(argfake," -cmd=");
+  strcpy(argfake, "cam1 -cmd=[n:up,a:0,f:1] -cmd=[n:up]");
+  ffstr arguments = fstr_explode(argfake, " -cmd=");
   // printf("len:%zu,alloc:%zu\n", fat_len(fstr, arguments),
   //        fat_alloc(fstr, arguments));
   struct command user_commands[fat_len(fstr, arguments) - 1];
@@ -215,8 +215,8 @@ int main(int argc, char *argv[]) {
   keyval tmp = {.key = "type", .val = NULL};
   int type_i = fat_bsearch(keyval, cam, CMP(keyval), tmp);
 
-  tmp = (keyval){.key="function",.val=NULL};
-  char* cam_function = cam[fat_bsearch(keyval,cam,CMP(keyval),tmp)].val;
+  tmp = (keyval){.key = "function", .val = NULL};
+  char *cam_function = cam[fat_bsearch(keyval, cam, CMP(keyval), tmp)].val;
 
   cam_cfg *cfg = read_cam_config(cam[type_i].val);
   if (cfg == NULL) {
@@ -230,15 +230,17 @@ int main(int argc, char *argv[]) {
   // printf("len:%zu",fat_len(fstr,arguments));
 
   // run commands here
-  for(int i = 0; i < fat_len(fstr,arguments)-1; i++){
+  for (int i = 0; i < fat_len(fstr, arguments) - 1; i++) {
     user_commands[i].function = cam_function;
-    // printf("n:\'%s\',a:\'%i\',f:\'%lf\',func:\'%s\'\n", user_commands[i].name,user_commands[i].arg, user_commands[i].factor,user_commands[i].function);
+    // printf("n:\'%s\',a:\'%i\',f:\'%lf\',func:\'%s\'\n",
+    // user_commands[i].name,user_commands[i].arg,
+    // user_commands[i].factor,user_commands[i].function);
 
-    run_cmd_tree(cfg,cam,user_commands[i]);
-  // run_cmd_tree(cfg, cam, (struct command){.name = "up",
-  //                                         .arg = -2,
-  //                                         .factor = 1.0,
-  //                                         .function = "debug"});
+    run_cmd_tree(cfg, cam, user_commands[i]);
+    // run_cmd_tree(cfg, cam, (struct command){.name = "up",
+    //                                         .arg = -2,
+    //                                         .factor = 1.0,
+    //                                         .function = "debug"});
   }
   // print_cam_cfg(cfg);
   if (0) {
