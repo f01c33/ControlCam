@@ -1,6 +1,14 @@
 
 ctrlcam
 
+ctrlcam.*
+
 \.vscode/
 
 *.user
+
+ic2.*
+
+replace
+
+*.cache

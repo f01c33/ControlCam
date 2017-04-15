@@ -15,7 +15,7 @@
 
 #include <curl/curl.h> // para comunicação web no geral
 
-#define VERSION "0.0.3" // git
+#define VERSION "0.0.4" // git
 
 // ordem correta
 // #include "fstr_manipulation.h"
@@ -105,6 +105,7 @@ void run_cmd_tree(cam_cfg *cfg, fkeyval table, struct command cmd) {
   } else {
     command.base = fstr_replace(command.base, "{{ARG}}", command.args[cmd.arg]);
   }
+
   /*
    printf("base:%s\n", command.base);
    printf("base_hdrs: \n");
@@ -218,16 +219,25 @@ int main(int argc, char *argv[]) {
   tmp = (keyval){.key = "function", .val = NULL};
   char *cam_function = cam[fat_bsearch(keyval, cam, CMP(keyval), tmp)].val;
 
-  cam_cfg *cfg = read_cam_config(cam[type_i].val);
-  if (cfg == NULL) {
-    fprintf(stderr,
-            "Something went while parsing the camera config, aborting\n");
-    goto error_cam_cfg;
+  // if camera config has valid cache
+  uint16_t curr_cksum = cksum_file(camera);
+  // use cache
+  cam_cfg *cfg = NULL;
+  if (valid_cache(curr_cksum, cam[type_i].val)) {
+    cfg = load_cam_cache(cam[type_i].val);
+  } else { // file has been updated
+    cfg = read_cam_config(cam[type_i].val);
+    if (cfg == NULL) {
+      fprintf(stderr,
+              "Something went while parsing the camera config, aborting\n");
+      goto error_cam_cfg;
+    }
+    // print_cam_cfg(cfg);
+    fat_sort(request, cfg->requests, CMP(request)); // so we can find the
+    // request with a binary search
+    save_cam_cache(curr_cksum, cam[type_i].val, cfg);
+    // printf("len:%zu",fat_len(fstr,arguments));
   }
-  // print_cam_cfg(cfg);
-  fat_sort(request, cfg->requests, CMP(request)); // so we can find the
-  // request with a binary search
-  // printf("len:%zu",fat_len(fstr,arguments));
 
   // run commands here
   for (int i = 0; i < fat_len(fstr, arguments) - 1; i++) {

@@ -8,7 +8,7 @@
 #ifndef FAT_ARRAY_H
 #define FAT_ARRAY_H
 
-#include <stddef.h>
+#include <stddef.h>  //for offsetof
 #include <stdint.h>  //for uint8_t
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +19,12 @@
 /* TO-DO:
    - Read rest of sds api and implement applicable and usefull functions
  */
+// typedef struct fat_hdr_struct{
+//   size_t len;
+//   size_t alloc;
+//   uint8_t flags;
+//   void* vec[];
+// }fat_hdr;
 
 #define fat_toStruct(fa__T, fa__array)                     \
   ((struct f##fa__T##_struct *)(((uint8_t *)(fa__array)) - \
@@ -86,6 +92,13 @@
     fat_toStruct(fa__T, (fa__array))->alloc = (fa__newlen); \
   } while (0)
 
+#define fat_flags(fa__T, fa__array) (fat_toStruct(fa__T,fa__array)->flag)
+
+#define fat_setflags(fa__T,fa__array, fa__newflag)\
+  do{ \
+    fat_flags(fa__T,fa__array) = fa__newflag; \
+  }while(0)
+
 /* Free's a fat array and makes array NULL. No operation is performed if
  * 'fa__array' is
  * NULL. */
@@ -94,6 +107,21 @@
     ((fa__array) == NULL) ? (void)(NULL)                            \
                           : free(fat_toStruct(fa__T, (fa__array))); \
   } while (0)
+
+/* declares the struct for the type fa__T
+ */
+#define fat_struct(fa__T) struct f##fa__T##_struct
+
+/* write header of the array fa__array to file fa__file
+ */
+#define fat_save(fa__T, fa__file, fa__array)                                   \
+  (fwrite(fat_toStruct(fa__T, fa__array), sizeof(fat_struct(fa__T)), 1, f))
+
+/* Read header of the array of type fa__T from file fa__file into the struct
+ * fa__struct
+ */
+#define fat_load(fa__T, fa__file, fa__struct)                                  \
+  fread(&fa__struct, sizeof(fat_struct(fa__T)), 1, fa__file)
 
 #define FCMP(fa__T, a, b) int f##fa__T##_cmp(const fa__T a, const fa__T b)
 
@@ -426,5 +454,6 @@
     } while (p <= u);                                                          \
     return -1;                                                                 \
   }
+
 
 #endif /* FAT_ARRAY_H */

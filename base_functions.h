@@ -1,3 +1,146 @@
+// include in fat_array.h? /*
+
+// int fat_savehdr(FILE* restrict f,void* fat_array){
+//   if(!fat_array){
+//     fat_array = &(fat_hdr){.len=0,.alloc=0,.flags=0}; // this is fine!?
+//   }else{
+//     fat_array = fat_toStruct(voidp__,fat_array);
+//   }
+//   printf("alloc: %zu, len: %zu, flags: %x\n",((struct fstr_struct*)fat_array)->alloc,((struct fstr_struct*)fat_array)->len,((struct fstr_struct*)fat_array)->flags);
+//   return fwrite(fat_array,sizeof(fat_hdr),1,f);
+// }
+
+// fat_hdr fat_loadhdr(FILE* restrict f){
+//   fat_hdr out;
+//   fread(&out,sizeof(fat_hdr),1,f);
+//   return out;
+// }
+
+
+// */
+
+static inline int fstr_save(FILE* restrict f,fstr stg){
+  int writen = 0;
+  // writen += fat_savehdr(f,stg);
+  if(stg){
+    writen += fat_save(str,f,stg);
+    writen += fwrite(stg,sizeof(str),fat_len(str,stg),f);
+  }else{
+    fat_struct(fstr) tmp = {.len = 0, .alloc = 0, .flags = 0};
+    writen += fat_save(str,f,&tmp.vec);
+  }
+  return writen;
+}
+
+static inline fstr fstr_load(FILE* restrict f){
+  // fat_hdr tmp = fat_loadhdr(f);
+  fat_struct(str) tmp;
+  fat_load(str,f,tmp);
+  fstr out = fat_new(str,tmp.alloc);
+  memcpy(fat_toStruct(str,out),&tmp,sizeof(fat_struct(str)));
+  // *(fat_hdr*)fat_toStruct(str,out) = tmp;
+  // fat_setlen(str,out,tmp.len);
+  // fat_setflags(str,out,tmp.flags);
+  fread(out,sizeof(str),tmp.len,f);
+  return out;
+}
+
+static int ffstr_save(FILE* restrict f,ffstr stgvec){
+  int writen = 0;
+  // writen += fat_savehdr(f,stgvec);
+  if(stgvec){
+    writen += fat_save(fstr,f,stgvec);
+    for(size_t i = 0; i < fat_len(fstr,stgvec); i++){
+      writen += fstr_save(f,stgvec[i]);
+    }
+  }else{ //vetor vazio, escrevemos um header vazio
+    fat_struct(fstr) tmp ={.len=0,.alloc=0,.flags=0};
+    writen += fat_save(fstr,f,&tmp.vec);
+  }
+  return writen;
+}
+
+static ffstr ffstr_load(FILE* restrict f){
+  fat_struct(fstr) tmp;
+  fat_load(fstr,f,tmp);
+  ffstr out = fat_new(fstr,tmp.alloc);
+  // *((fat_hdr*)fat_toStruct(fstr,out)) = tmp;
+  memcpy(fat_toStruct(fstr,out),&tmp,sizeof(fat_struct(fstr)));
+  for(size_t i = 0; i < tmp.len; i++){
+    out[i] = fstr_load(f);
+  }
+  return out;
+}
+
+static int request_save(FILE* restrict f,request rqst){
+  int writen = 0;
+  writen += fwrite(&rqst.fact_to_next,sizeof(double),1,f);
+  writen += fstr_save(f,rqst.name);
+  writen += fstr_save(f,rqst.next_cmd);
+  writen += fstr_save(f,rqst.prev_cmd);
+  writen += fstr_save(f,rqst.base);
+  writen += ffstr_save(f,rqst.headers);
+  writen += ffstr_save(f,rqst.args);
+  return writen;
+}
+
+static request request_load(FILE* restrict f){
+  request out;
+  fread(&(out.fact_to_next),sizeof(double),1,f);
+  out.name = fstr_load(f);
+  out.next_cmd = fstr_load(f);
+  out.prev_cmd = fstr_load(f);
+  out.base = fstr_load(f);
+  out.headers = ffstr_load(f);
+  out.args = ffstr_load(f);
+  return out;
+}
+
+static int frequest_save(FILE* restrict f, frequest frqst){
+  int writen = 0;
+  if(frqst){
+    writen += fat_save(request,f,frqst);
+    for(size_t i = 0; i < fat_len(request,frqst); i++){
+      writen += request_save(f,frqst[i]);
+    }
+  }else{
+    fat_struct(request) tmp = {.len = 0, .alloc = 0, .flags = 0};
+    fat_save(request,f,&tmp.vec);
+  }
+  return writen;
+}
+
+static frequest frequest_load(FILE* restrict f){
+  // fat_hdr tmp = fat_loadhdr(f);
+  fat_struct(request) tmp;
+  fat_load(request,f,tmp);
+  frequest out = fat_new(request,tmp.alloc);
+  // *fat_toStruct(request,out) = tmp;
+  memcpy(fat_toStruct(request,out),&tmp,sizeof(fat_struct(request)));
+  for(size_t i = 0; i < tmp.len; i++){
+    out[i] = request_load(f);
+  }
+  return out;
+}
+
+static int cam_cfg_save(FILE* restrict f,cam_cfg* cfg){
+  int writen = fstr_save(f,cfg->name);
+  writen += ffstr_save(f,cfg->headers);
+  writen += frequest_save(f,cfg->requests);
+  return writen;
+}
+
+static cam_cfg* cam_cfg_load(FILE* restrict f){
+  cam_cfg* out = malloc(sizeof(cam_cfg));
+  // TODO: check for out of memory
+  if(out){
+    out->name = fstr_load(f);
+    out->headers = ffstr_load(f);
+    out->requests = frequest_load(f);
+  }
+  return out;
+}
+
 // frees everything.
 void request_free(request rqst) {
   fat_free(str, rqst.name);
@@ -79,12 +222,12 @@ fkeyval read_camera_args(const char *config) {
   return out;
 }
 
-void print20(char* stg){
-  for(int i = 0; i < 20; i++,stg++){
-    putchar(stg[0]);
-  }
-  return;
-}
+// void print20(char* stg){
+//   for(int i = 0; i < 20; i++,stg++){
+//     putchar(stg[0]);
+//   }
+//   return;
+// }
 
 /// lê o tipo da câmera da pasta /config/cam_type.json
 cam_cfg *read_cam_config(const char *cam_type) {
@@ -192,7 +335,7 @@ cam_cfg *read_cam_config(const char *cam_type) {
                   "commands should have an array of objects (requests), it "
                   "does not, currently, it has type %d; file %s at line %i\n",
                   jstokens[i].type, cam_type, __LINE__);
-          print20(&cam_cfg_txt[jstokens[i].start]);
+          // print20(&cam_fg_txt[jstokens[i].start]);
           goto cleanup_error2;
         }
         int rqst_size = jstokens[i].size;
@@ -469,4 +612,80 @@ fstr substitute_macros(fstr stg, fkeyval table) {
     }
   }
   return stg;
+}
+
+// checksum simples
+uint16_t checksum(const char* file){
+	char readtmp[1024];
+	uint16_t cksum = 0;
+	int read;
+	FILE *f = fopen(file,"rb");
+	while(!feof(f)){
+		read = fread(readtmp,sizeof(char),1024,f);
+		for(int i = 0; i < read; i++){
+			cksum += (uint8_t) readtmp[i];
+		}
+		cksum &= 0xFFFFFFFF; //fast modulo
+		//cksum %= 0xFFFF
+	}
+	return cksum;
+}
+
+uint16_t cksum_file(const char* file){
+  char tmp[1<<7];
+  strcpy(tmp,"./cameras/");
+  strcat(tmp,file);
+  strcat(tmp,".json");
+  uint16_t out = checksum(tmp);
+  return out;
+}
+
+int valid_cache(uint16_t cksum, const char* file){
+  char tmp[1<<7];
+  strcpy(tmp,"./cameras/");
+  strcat(tmp,file);
+  strcat(tmp,".cache");
+  FILE *f = fopen(tmp,"rb");
+  if(f){
+    uint16_t old_cksum;
+    fread(&old_cksum,sizeof(uint16_t),1,f);
+    if(old_cksum == cksum){
+      fclose(f);
+      return 1;
+    }else{
+      fclose(f);
+      return 0;
+    }
+  }else{//no such file
+    return 0;
+  }
+}
+
+cam_cfg* load_cam_cache(const char* file){
+  char tmp[1<<7];
+  strcpy(tmp,"./cameras/");
+  strcat(tmp,file);
+  strcat(tmp,".cache");
+  FILE *f = fopen(tmp,"rb");
+  fread(tmp,sizeof(uint16_t),1,f); //ignore checksum
+  cam_cfg *out = cam_cfg_load(f);
+  fclose(f);
+  return out;
+}
+
+void save_cam_cache(uint16_t cksum, const char* file,cam_cfg* cfg){
+  char tmp[1<<7];
+  strcpy(tmp,"./cameras/");
+  strcat(tmp,file);
+  strcat(tmp,".cache");
+  FILE *f = fopen(tmp,"wb");
+  if(!f){
+    fprintf(stderr,"Error opening file %s for writing cache, on line %d",file,__LINE__);
+    return;
+  }else{
+    fwrite(&cksum,sizeof(uint16_t),1,f);
+    cam_cfg_save(f,cfg);
+    fclose(f);
+  }
+  return;
 }

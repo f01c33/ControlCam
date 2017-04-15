@@ -1,13 +1,14 @@
-// missing definitions from time.h /*
+// missing definitions from time.h  in c99, but not in c11 /*
 #ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 199309L
+  #define _POSIX_C_SOURCE 199309L
+    #if __STDC_VERSION__ == 199901L
+    struct timespec {
+      time_t tv_sec;
+      long tv_nsec;
+    };
 
-struct timespec {
-  time_t tv_sec;
-  long tv_nsec;
-};
-
-int nanosleep(const struct timespec *req, struct timespec *rem);
+    #endif
+  int nanosleep(const struct timespec *req, struct timespec *rem);
 #endif
 // */
 
