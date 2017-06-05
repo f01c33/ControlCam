@@ -179,18 +179,19 @@ struct command parse_user_command(char *input) {
   return out;
 }
 
+//usage ./ctrlcam <cam_name> -cmd=[n:command,a:argument,f:multiplying_factor] (can be repeated)
 int main(int argc, char *argv[]) {
-  // ignoring program name, as it's not usefull in this case'
-  // fstr argjoin = ffstr_join(argv + 1, argc - 1, ' ');
+  // ignoring program name, as it's not usefull in this case
+  fstr argjoin = ffstr_join(argv + 1, argc - 1, ' ');
   // puts(argjoin);
 
-  // ffstr arguments = fstr_explode(argjoin, " -cmd=");
+  ffstr arguments = fstr_explode(argjoin, " -cmd=");
 
-  char argfake[60];
-  strcpy(argfake, "cam1 -cmd=[n:up,a:0,f:1] -cmd=[n:up]");
-  ffstr arguments = fstr_explode(argfake, " -cmd=");
+  // char argfake[60];
+  // strcpy(argfake, "cam1 -cmd=[n:up,a:0,f:1] -cmd=[n:up]");
+  // ffstr arguments = fstr_explode(argfake, " -cmd=");
   // printf("len:%zu,alloc:%zu\n", fat_len(fstr, arguments),
-  //        fat_alloc(fstr, arguments));
+
   struct command user_commands[fat_len(fstr, arguments) - 1];
   for (int i = 1; i < fat_len(fstr, arguments); i++) {
     // printf("%i:%s\n", i, arguments[i]);
