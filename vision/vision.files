@@ -1,0 +1,15 @@
+yolo_obj_detection.cpp
+qsort.h
+CMakeLists.txt
+main.cpp
+obj_detect.cpp
+obj_detect_face.cpp
+obj_range.cpp
+posicionamento.cpp
+posicionamento/CMakeFiles/3.8.2/CompilerIdC/CMakeCCompilerId.c
+posicionamento/CMakeFiles/3.8.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+posicionamento/CMakeFiles/3.9.2/CompilerIdC/CMakeCCompilerId.c
+posicionamento/CMakeFiles/3.9.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+posicionamento/CMakeFiles/feature_tests.c
+posicionamento/CMakeFiles/feature_tests.cxx
+posicionamento/posicionamento.cpp

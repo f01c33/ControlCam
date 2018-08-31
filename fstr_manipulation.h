@@ -43,7 +43,6 @@ size_t revstrstr(const char *haystack, const char *needle,
 /// que segundo o padrão ISO C 99 pode ser tratado como built-in, podendo
 /// utilizar a instrução
 /// ASM adequada, tornando o programa um pouco mais rápido.
-/// O(2N) (talvez, ainda não tive isso em aula)
 fstr fstr_replace(fstr base, const char *needle, const char *replacement) {
   char *match = strstr(base, needle);
   if (NULL == match) {

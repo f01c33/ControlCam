@@ -1,0 +1,149 @@
+{
+	"name":"Shenzhen_Smarteye",
+	"headers":[
+		"Authorization: Basic {{B64}}",
+		"Accept-Encoding: gzip, deflate",
+		"Accept-Language: en-US,en;q=0.8",
+		"Upgrade-Insecure-Requests: 1",
+		"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+		"Referer: http://{{IP}}/camera.htm",
+		"Connection: keep-alive"
+	],
+	"commands":[
+		{"name":"reset", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["1"],
+			"factor_to_next":0.0,
+			"next_cmd":null
+		},
+		{"name":"up", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}",
+			"args":["0"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"down", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["2"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"left", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["4"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"right", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["6"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"upright", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["91"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"downright", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["93"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"upleft", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["90"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"downleft", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["92"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"spin", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["25"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"horizontalpatrol", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["26","27"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"verticalpatrol", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["28","29"],
+			"factor_to_next":1.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"io", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["94","95"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"brightness", 
+			"base":"http://{{IP}}/camera_control.cgi?param=1&value={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["0","16","32","48","64","80","96","112","128","144","160","176","192","208","224","240"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"contrast", 
+			"base":"http://{{IP}}/camera_control.cgi?param=2&value={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["0", "1", "2", "3", "4", "5", "6"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"mode", 
+			"base":"http://{{IP}}/camera_control.cgi?param=3&value={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["0", "1", "2"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"resolution", 
+			"base":"http://{{IP}}/camera_control.cgi?param=0&value={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["2", "8", "32"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+
+		},
+		{"name":"default", 
+			"base":"http://{{IP}}/camera_control.cgi?param=0&value={{ARG}}&user={{LOGIN}}&pwd={{PASS}}", 
+			"args":["8"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"mirror",
+			"base":"http://{{IP}}/camera_control.cgi?param=5&value={{ARG}}&user={{LOGIN}}&pwd={{PASS}}",
+			"args":["0","2"],
+			"factor_to_next":0.0, 
+			"next_cmd":"reset"
+		},
+		{"name":"snapshot",
+			"base":"http://{{IP}}/snapshot.cgi?user={{LOGIN}}&pwd={{PASS}}&{{ARG}}",
+			"args":["0"],
+			"factor_to_next":0.0,
+		},
+		{"name":"savepreset", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}", 
+			"args":["30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52","54", "56", "58", "60"],
+		},
+		{"name":"callpreset", 
+			"base":"http://{{IP}}/decoder_control.cgi?command={{ARG}}", 
+			"args":["31", "33", "35", "37", "39", "41", "43", "45", "47", "49", "51", "53", "55", "57", "59", "61"],
+		}
+	]	
+}

@@ -1,0 +1,101 @@
+|\______
+[0 1 2 3] <- laca
+[4 5 6 7]
+[_______]
+
+Nmap scan report for 172.25.3.49    c4 (ok)
+Host is up (0.0010s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: A2:58:57:D5:C0:00 (Chic Technology (china))
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.66    c5 (ok)
+Host is up (0.00068s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 00:0C:5D:75:84:22 (Chic Technology (china))
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.73    c6 (ok)
+Host is up (0.0016s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 00:0C:5D:75:8C:13 (Chic Technology (china))
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.81    c7 (ok)
+Host is up (0.00099s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 00:6E:06:1C:07:38 (Unknown)
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.93    c3 (ok)
+Host is up (0.00049s latency).
+Not shown: 98 closed ports
+PORT   STATE SERVICE
+23/tcp open  telnet
+80/tcp open  http
+MAC Address: 00:AF:30:30:93:F1 (Unknown)
+Device type: general purpose
+Running: Linux 2.6.X
+OS CPE: cpe:/o:linux:linux_kernel:2.6
+OS details: Linux 2.6.9 - 2.6.30
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.94    c2 (ok)
+Host is up (0.00061s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 00:0C:5D:75:89:E9 (Chic Technology (china))
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.99    c1 (ok)
+Host is up (0.0011s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 00:0D:C5:DA:A8:4B (EchoStar Global B.V. )
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop
+
+Nmap scan report for 172.25.3.108   c0 (ok)
+Host is up (0.00099s latency).
+Not shown: 99 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 78:A5:DD:09:B2:2A (Shenzhen Smarteye Digital Electronics)
+Device type: specialized|webcam
+Running: AirMagnet embedded, Foscam embedded, Instar embedded, Linux 2.4.X
+OS CPE: cpe:/h:airmagnet:smartedge cpe:/h:foscam:fi8904w cpe:/h:foscam:f18910w cpe:/h:foscam:f18918w cpe:/h:instar:in-3010 cpe:/o:linux:linux_kernel:2.4
+OS details: AirMagnet SmartEdge wireless sensor; or Foscam FI8904W, FI8910W, or FI8918W, or Instar IN-3010 surveillance camera (Linux 2.4)
+Network Distance: 1 hop

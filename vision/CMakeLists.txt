@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 2.8)
+project( vision )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -g")
+add_executable( vision obj_detect.cpp)
+target_link_libraries( vision ${OpenCV_LIBS} )

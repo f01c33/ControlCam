@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=0.1">
+    <style>
+        #boxB {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            /* Safari and Chrome */
+            -moz-transform: rotateY(180deg);
+            /* Firefox */
+        }
+        
+        #boxC {
+            transform: rotateX(180deg);
+            -webkit-transform: rotateX(180deg);
+            /* Safari and Chrome */
+            -moz-transform: rotateX(180deg);
+            /* Firefox */
+        }
+        
+        #boxD {
+            transform: rotateX(180deg) rotateY(180deg);
+            -webkit-transform: rotateX(180deg) rotateY(180deg);
+            /* Safari and Chrome */
+            -moz-transform: rotateX(180deg) rotateY(180deg);
+            /* Firefox */
+        }
+    </style>
+
+</head>
+<!--- https://jsfiddle.net/DuT9U/1/ ---->
+
+<body style="margin: 0px; background: #0e0e0e;">
+    <p></p>
+    <button onclick="javascript:openAll();">Abrir todos os IPs</button>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        ips = ["172.25.3.108", "172.25.3.99", "172.25.3.94", "172.25.3.93", "172.25.3.49", "172.25.3.66", "172.25.3.73", "172.25.3.81"];
+
+        function openAll() {
+            var arr = new Array();
+            for (var i = 0; i < ips.length; i++) {
+                arr.push(window.open("http://" + ips[i]));
+            }
+        };
+        for (var i = 0; i < ips.length; i++) {
+            $("p").append("<a href=\"http://" + ips[i] + "/\" target=\"_blank\"><img id=\"boxD\" style=\"-webkit-user-select: none;\" src=\"http://" + ips[i] + "/videostream.cgi?user=utfpr&pwd=utfpr\"></a>");
+        }
+    </script>
+</body>
+<!-- c7 -->
+
+</html>

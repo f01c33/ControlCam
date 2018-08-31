@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/h/github/ctrlcam/vision/posicionamento/posicionamento.cpp
+opencv2/objdetect.hpp
+/home/h/github/ctrlcam/vision/posicionamento/opencv2/objdetect.hpp
+opencv2/highgui.hpp
+/home/h/github/ctrlcam/vision/posicionamento/opencv2/highgui.hpp
+opencv2/imgproc.hpp
+/home/h/github/ctrlcam/vision/posicionamento/opencv2/imgproc.hpp
+iostream
+-
+stdio.h
+-
+

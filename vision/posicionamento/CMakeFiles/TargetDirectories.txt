@@ -1,0 +1,3 @@
+/home/h/github/ctrlcam/vision/posicionamento/CMakeFiles/rebuild_cache.dir
+/home/h/github/ctrlcam/vision/posicionamento/CMakeFiles/vision.dir
+/home/h/github/ctrlcam/vision/posicionamento/CMakeFiles/edit_cache.dir

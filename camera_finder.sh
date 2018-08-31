@@ -1,11 +1,12 @@
 #!/bin/bash
 
-sudo nmap -n -PN -sS -F -T4 -O -oG out -O --osscan-limit 192.168.0.1/24
+sudo nmap -F -O --osscan-limit 172.25.3.0/24 > out;
 # sudo nmap -n -PN -p U:666,T:666,S:666 -sS -T5 -O -oG out -O --osscan-limit 192.168.1.1/24 > out2;
 #cat out | grep -i [0-9].*camera
-cat out | grep -P -i -o '[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}(?=.*open)'
-cat out2 | grep -E -i -oz '[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}(?=.*B\-Link)'
-
+#cat out | grep -P -i -o '[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}(?=.*open)'
+#cat out2 | grep -E -i -oz '[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}(?=.*B\-Link)'
+grep -E '(A2:58:57:D5:C0:00)|(00:0C:5D:75:84:22)|(00:0C:5D:75:8C:13)|(00:6E:06:1C:07:38)|(00:AF:30:30:93:F1)|(00:0C:5D:75:89:E9)|(00:0D:C5:DA:A8:4B)|(78:A5:DD:09:B2:2A)' -C 5 out > cameras_found.txt;
+cat cameras_found.txt
 # Nmap scan report for 172.25.6.25
 # Host is up (0.0015s latency).
 # Not shown: 99 closed ports

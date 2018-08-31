@@ -1,0 +1,3 @@
+opencv_createsamples -vec sample_vec_out -info anotations.txt -w 50 -h 50
+
+opencv_traincascade -data cascade_data/ -vec sample_vec_out -bg bg.txt -numPos 200 -numNeg 7 -precalcValBufSize 1300 -precalcIdxBufSize 1300 -acceptanceRatioBreakValue 0.00001 -w 50 -h 50 -mode ALL

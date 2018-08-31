@@ -41,8 +41,11 @@ all: objects
 # routine to run
 objects: 
 	$(CC) $(OBJ)$(EXT) $(DEPS) $(COMPILER_FLAGS) -o $(OUT) $(LINKER_FLAGS)
+	rm ./cameras/*.cache
 #	$(CC2) $(OBJ2)$(EXT2) $(DEPS2) $(COMPILER_FLAGS2) $(LINKER_FLAGS2) -o $(OUT2)
-
+debug:
+	$(CC) $(OBJ)$(EXT) -DDEBUG=1 $(DEPS) $(COMPILER_FLAGS) -o $(OUT) $(LINKER_FLAGS)
 # example code to clean stuff
 clean:
 	rm $(OBJ) $(OBJ2)
+	rm ./cameras/*.cache
